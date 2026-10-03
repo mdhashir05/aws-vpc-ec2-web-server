@@ -1,46 +1,48 @@
-# Project 2 — Custom AWS VPC with EC2 Web Server
+# Custom AWS VPC with EC2 Web Server
 
-## 1. Objective
+A hands-on AWS networking and web server deployment project demonstrating how to build a custom Virtual Private Cloud (VPC), configure public internet connectivity, and host a portfolio webpage on an Amazon Linux EC2 instance using Apache HTTP Server.
 
-Create a custom Amazon VPC with one public subnet and deploy an Amazon Linux EC2 instance. Configure an Internet Gateway, public route table, and Security Group, install Apache HTTP Server, and host a basic portfolio webpage accessible through the EC2 public IP.
+## Project Overview
 
-## 2. AWS Services Used
+The project involved creating a custom VPC, configuring a public subnet and Internet Gateway, setting up route tables and security groups, and deploying an EC2 instance running Apache HTTP Server. The hosted webpage was tested through the instance's public IPv4 address.
 
-- Amazon VPC
-- Amazon EC2
-- Internet Gateway
-- Route Table
-- Security Group
-- Apache HTTP Server on Amazon Linux
+**Project Status:** Successfully configured and tested. The AWS resources were subsequently deleted to avoid ongoing charges, so the original website endpoint is no longer expected to be available.
 
-## 3. Architecture
+## Architecture
 
-![AWS VPC + EC2 Web Server Architecture](architecture-diagram.png)
+![AWS VPC and EC2 Web Server Architecture](architecture-diagram.png)
 
-Traffic flow:
+### Traffic Flow
 
-Internet / Web Browser → Internet Gateway → `my-vpc-project` → `public-subnet` → `web-server-SG` → Amazon Linux EC2 → Apache HTTP Server → Portfolio Website
+1. A user accesses the website through a web browser.
+2. Internet traffic reaches the VPC through the Internet Gateway.
+3. The public route table directs internet-bound traffic through the Internet Gateway.
+4. The Security Group controls inbound access to the EC2 instance.
+5. Apache HTTP Server receives HTTP requests on TCP port `80`.
+6. The server returns the hosted portfolio webpage to the browser.
 
-## 4. Configuration Details
+## AWS Configuration
 
 | Resource | Configuration |
 |---|---|
 | VPC | `my-vpc-project` |
-| VPC CIDR | `10.0.0.0/16` |
+| VPC IPv4 CIDR | `10.0.0.0/16` |
 | Public Subnet | `public-subnet` |
-| Subnet CIDR | `10.0.1.0/24` |
+| Subnet IPv4 CIDR | `10.0.1.0/24` |
 | Internet Gateway | `my-project-igw` |
 | Route Table | `public-route-table` |
-| Default Route | `0.0.0.0/0` via Internet Gateway |
+| Default Internet Route | `0.0.0.0/0` via Internet Gateway |
 | Security Group | `web-server-SG` |
-| EC2 AMI | Amazon Linux |
-| Instance Type | `t3.micro` |
+| Operating System | Amazon Linux |
+| EC2 Instance Type | `t3.micro` |
 | Web Server | Apache HTTP Server (`httpd`) |
-| Web Port | TCP 80 |
+| HTTP Port | TCP `80` |
 
-## 5. EC2 Web Server Setup
+## EC2 and Apache Deployment
 
-Apache was installed and started on the Amazon Linux instance using:
+The EC2 instance was configured to host a static portfolio webpage using Apache HTTP Server.
+
+The following commands were used to install, start, enable, and verify the Apache service on Amazon Linux:
 
 ```bash
 sudo dnf update -y
@@ -50,64 +52,122 @@ sudo systemctl enable httpd
 sudo systemctl status httpd
 ```
 
-The website was placed at:
+The website's HTML file was placed in Apache's default document root:
 
 ```text
 /var/www/html/index.html
 ```
 
-The Apache service was verified as active and listening on port 80.
+The Apache service was verified as active, and the server was configured to serve HTTP traffic on port `80`.
 
-## 6. Security Group
+## Network Security
 
-The project Security Group was configured to allow web traffic on TCP port 80 and SSH access on TCP port 22. The uploaded evidence also shows an additional custom TCP rule in the Security Group screenshot.
+The `web-server-SG` Security Group was configured to permit web traffic over TCP port `80` and SSH access over TCP port `22`. The captured Security Group evidence also shows an additional custom TCP rule.
 
-## 7. Testing
+For a production deployment, SSH access should be restricted to trusted IP addresses, and unnecessary inbound rules should be removed.
 
-The deployed website was tested from a web browser using the EC2 public IPv4 address:
+## Deployment Verification
 
-```text
-http://34.201.1.89/
-```
+The website was tested in a browser using the EC2 instance's public IPv4 address. The captured evidence showed the portfolio webpage loading successfully.
 
-The browser successfully displayed the portfolio webpage, demonstrating that the EC2 instance was reachable through the configured public networking path and that Apache was serving the HTML content.
+This test demonstrated connectivity between the public internet, the configured VPC networking components, the EC2 instance, and the Apache web server.
 
-## 8. Evidence / Screenshots
+## Implementation Evidence
 
-### 8.1 VPC Configuration
+### 1. VPC Configuration
+
 ![VPC Configuration](screenshots/01-vpc.png)
 
-### 8.2 Internet Gateway
+Documents the custom VPC configuration and its IPv4 network range.
+
+### 2. Internet Gateway
+
 ![Internet Gateway](screenshots/02-internet-gateway.png)
 
-### 8.3 Public Route Table
+Documents the Internet Gateway used to provide internet connectivity for the public network path.
+
+### 3. Public Route Table
+
 ![Public Route Table](screenshots/03-route-table.png)
 
-### 8.4 Security Group
+Shows the route table configuration for directing internet-bound traffic through the Internet Gateway.
+
+### 4. Security Group
+
 ![Security Group](screenshots/04-security-group.png)
 
-### 8.5 EC2 Instance
+Documents the inbound access rules configured for the EC2 web server.
+
+### 5. EC2 Instance
+
 ![EC2 Instance](screenshots/05-ec2-instance.png)
 
-### 8.6 Apache Running
+Shows the EC2 instance used to host the portfolio webpage.
+
+### 6. Apache Service
+
 ![Apache Running](screenshots/06-apache-running.png)
 
-### 8.7 Working Website
+Provides evidence of the Apache HTTP Server running on the instance.
+
+### 7. Working Website
+
 ![Working Website](screenshots/07-working-website.png)
 
-## 9. Result
+Shows the portfolio webpage successfully served through the EC2 instance's public endpoint during testing.
 
-A custom AWS VPC was configured with a public subnet, Internet Gateway, public route table, Security Group, and Amazon Linux EC2 instance. Apache HTTP Server successfully hosted the portfolio webpage, which was accessible through the EC2 public IP.
+## AWS Services and Technologies
 
-## 10. Cleanup
+- **Amazon VPC:** Custom network environment for the web server.
+- **Amazon EC2:** Compute instance hosting the portfolio webpage.
+- **Internet Gateway:** Internet connectivity for the public subnet.
+- **Route Tables:** Routing configuration for internet-bound traffic.
+- **Security Groups:** Network-level access control for the EC2 instance.
+- **Amazon Linux:** Operating system for the web server.
+- **Apache HTTP Server:** Serves the static HTML webpage.
+- **HTML:** Content displayed on the website.
 
-After completing the testing and screenshots, the project resources were deleted to avoid unnecessary AWS usage. The custom VPC and its associated networking resources were removed, and the EC2 instance was terminated.
+## Skills Demonstrated
 
-## 11. Project Structure
+- Creating and configuring a custom AWS VPC.
+- Working with IPv4 CIDR blocks and public subnets.
+- Configuring an Internet Gateway and public route table.
+- Launching and managing an EC2 instance.
+- Configuring Security Group inbound rules.
+- Installing and managing Apache on Amazon Linux.
+- Hosting and testing a static webpage over HTTP.
+- Verifying cloud infrastructure through AWS console evidence.
+- Documenting a cloud deployment for a technical portfolio.
+
+## Security Considerations
+
+- Restrict SSH access to trusted source IP addresses.
+- Allow only the inbound ports required for the application.
+- Avoid exposing credentials, private keys, or sensitive account information in the repository.
+- HTTPS/TLS was not demonstrated in the captured deployment and remains a potential improvement.
+- Additional production improvements include stronger input validation, monitoring, logging, and secure configuration management.
+
+## Cleanup and Cost Management
+
+After testing and capturing the implementation evidence, the EC2 instance was terminated and the associated networking resources were removed to avoid unnecessary AWS charges.
+
+The original deployment is documented through the source files and screenshots rather than a currently running endpoint. Recreating the environment may incur AWS charges depending on the selected region and resource configuration.
+
+## Future Improvements
+
+- Configure HTTPS using TLS certificates.
+- Restrict SSH access to trusted IP addresses.
+- Configure DNS and a custom domain.
+- Add monitoring and logging for operational visibility.
+- Automate infrastructure provisioning using AWS CloudFormation or Terraform.
+- Consider Amazon S3 for static website hosting where appropriate.
+
+## Repository Structure
 
 ```text
 aws-vpc-ec2-web-server/
 ├── README.md
+├── index.html
 ├── architecture-diagram.png
 └── screenshots/
     ├── 01-vpc.png
@@ -118,3 +178,9 @@ aws-vpc-ec2-web-server/
     ├── 06-apache-running.png
     └── 07-working-website.png
 ```
+
+---
+
+**Author:** Mohammed Hashir 
+
+**Project:** Custom AWS VPC with EC2 Web Server
